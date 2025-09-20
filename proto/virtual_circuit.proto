@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package virtual_circuit.v1;
+
+service VirtualCircuit {
+  rpc SetUp(SetUpRequest) returns (SetUpResponse);
+  rpc TearDown(TearDownRequest) returns (TearDownResponse);
+}
+
+message SetUpRequest {
+  uint64 a_side_id = 1;
+  uint64 b_side_id = 2;
+  uint64 bandwidth_kbps = 3;
+}
+
+message SetUpResponse {
+  bool is_success = 1;
+}
+
+message TearDownRequest {
+  uint64 a_side_id = 1;
+}
+
+message TearDownResponse {
+  bool is_success = 1;
+}
