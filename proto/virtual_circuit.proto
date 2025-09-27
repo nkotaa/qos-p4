@@ -19,6 +19,7 @@ message SetUpResponse {
 
 message TearDownRequest {
   uint64 a_side_id = 1;
+  uint64 b_side_id = 2;
 }
 
 message TearDownResponse {

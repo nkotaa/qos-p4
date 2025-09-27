@@ -21,10 +21,12 @@ class SetUpResponse(_message.Message):
     def __init__(self, is_success: bool = ...) -> None: ...
 
 class TearDownRequest(_message.Message):
-    __slots__ = ("a_side_id",)
+    __slots__ = ("a_side_id", "b_side_id")
     A_SIDE_ID_FIELD_NUMBER: _ClassVar[int]
+    B_SIDE_ID_FIELD_NUMBER: _ClassVar[int]
     a_side_id: int
-    def __init__(self, a_side_id: _Optional[int] = ...) -> None: ...
+    b_side_id: int
+    def __init__(self, a_side_id: _Optional[int] = ..., b_side_id: _Optional[int] = ...) -> None: ...
 
 class TearDownResponse(_message.Message):
     __slots__ = ("is_success",)
