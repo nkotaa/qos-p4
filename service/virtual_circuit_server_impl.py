@@ -12,13 +12,22 @@ def set_up_virtual_circuit(intserv, a_side_interface,
             egress_port=b_side_interface.port,
             dest_vlanid=b_side_interface.vlan_id,
             )
-        intserv.set_bandwidth(flow_selector, bandwidth_kbps,
-                              service_class=2)
+        intserv.set_guaranteed(flow_selector, bandwidth_kbps=bandwidth_kbps)
     except RuntimeError as err:
         raise RuntimeError("Virtual circuit not set up")
 
-def tear_down_virtual_circuit(intserv, a_side_interface):
-    raise NotImplementedError('Method not implemented!')
+def tear_down_virtual_circuit(intserv, a_side_interface,
+                              b_side_interface):
+    try:
+        flow_selector = intserv.create_flow_selector(
+            ingress_port=a_side_interface.port,
+            source_vlanid=a_side_interface.vlan_id,
+            egress_port=b_side_interface.port,
+            dest_vlanid=b_side_interface.vlan_id,
+            )
+        intserv.set_best_effort(flow_selector)
+    except RuntimeError as err:
+        raise RuntimeError("Virtual circuit not torn down")
 
 class VirtualCircuitServicer(virtual_circuit_pb2_grpc.VirtualCircuitServicer):
 
@@ -44,7 +53,9 @@ class VirtualCircuitServicer(virtual_circuit_pb2_grpc.VirtualCircuitServicer):
         is_virtual_circuit_torn_down = False
         try:
             a_side_interface = self.get_virtual_interface(member_id=request.a_side_id)
-            tear_down_virtual_circuit(self.intserv, a_side_interface)
+            b_side_interface = self.get_virtual_interface(member_id=request.b_side_id)
+            tear_down_virtual_circuit(self.intserv, a_side_interface,
+                                      b_side_interface)
             is_virtual_circuit_torn_down = True
         except RuntimeError as err:
             raise NotImplementedError
