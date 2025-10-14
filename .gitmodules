@@ -1,4 +1,4 @@
 [submodule "tofino-flow-control"]
 	path = tofino-flow-control
 	url = git@github.com:TiantongHu/tofino-flow-control.git
-	branch = feature/separate-p4-include
+	branch = PIE-extended
