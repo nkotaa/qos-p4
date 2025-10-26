@@ -1,7 +1,10 @@
+import logging
 import grpc
 
 from service import virtual_circuit_pb2
 from service import virtual_circuit_pb2_grpc
+
+logger = logging.getLogger(__name__)
 
 def set_up_virtual_circuit(intserv, a_side_interface,
                            b_side_interface, bandwidth_kbps):
@@ -36,6 +39,7 @@ class VirtualCircuitServicer(virtual_circuit_pb2_grpc.VirtualCircuitServicer):
         self.get_virtual_interface = get_virtual_interface
 
     def SetUp(self, request, context):
+        logger.info('Received SetUpRequest: ' + str(request) + ' from ' + context.peer())
         is_virtual_circuit_set_up = False
         try:
             a_side_interface = self.get_virtual_interface(member_id=request.a_side_id)
@@ -50,6 +54,7 @@ class VirtualCircuitServicer(virtual_circuit_pb2_grpc.VirtualCircuitServicer):
             )
 
     def TearDown(self, request, context):
+        logger.info('Received TearDownRequest: ' + str(request) + ' from ' + context.peer())
         is_virtual_circuit_torn_down = False
         try:
             a_side_interface = self.get_virtual_interface(member_id=request.a_side_id)
