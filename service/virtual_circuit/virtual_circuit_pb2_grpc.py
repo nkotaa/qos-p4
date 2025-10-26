@@ -3,7 +3,7 @@
 import grpc
 import warnings
 
-from service import virtual_circuit_pb2 as service_dot_virtual__circuit__pb2
+from service.virtual_circuit import virtual_circuit_pb2 as service_dot_virtual__circuit__pb2
 
 GRPC_GENERATED_VERSION = '1.74.0'
 GRPC_VERSION = grpc.__version__

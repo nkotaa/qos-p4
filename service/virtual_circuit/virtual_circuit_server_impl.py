@@ -1,8 +1,8 @@
 import logging
 import grpc
 
-from service import virtual_circuit_pb2
-from service import virtual_circuit_pb2_grpc
+from service.virtual_circuit import virtual_circuit_pb2
+from service.virtual_circuit import virtual_circuit_pb2_grpc
 
 logger = logging.getLogger(__name__)
 
