@@ -10,10 +10,9 @@ def set_up_virtual_circuit(intserv, a_side_interface,
                            b_side_interface, bandwidth_kbps):
     try:
         flow_selector = intserv.create_flow_selector(
-            ingress_port=a_side_interface.port,
+            ingress_port=b_side_interface.port,
             source_vlanid=a_side_interface.vlan_id,
-            egress_port=b_side_interface.port,
-            dest_vlanid=b_side_interface.vlan_id,
+            egress_port=a_side_interface.port,
             )
         intserv.set_guaranteed(flow_selector, bandwidth_kbps=bandwidth_kbps)
     except RuntimeError as err:
@@ -23,10 +22,9 @@ def tear_down_virtual_circuit(intserv, a_side_interface,
                               b_side_interface):
     try:
         flow_selector = intserv.create_flow_selector(
-            ingress_port=a_side_interface.port,
+            ingress_port=b_side_interface.port,
             source_vlanid=a_side_interface.vlan_id,
-            egress_port=b_side_interface.port,
-            dest_vlanid=b_side_interface.vlan_id,
+            egress_port=a_side_interface.port,
             )
         intserv.set_best_effort(flow_selector)
     except RuntimeError as err:
