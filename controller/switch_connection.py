@@ -13,6 +13,9 @@ except ImportError:
     sys.path.append(os.path.join(SDE_PYTHON3, 'tofino', 'bfrt_grpc'))
     import bfrt_grpc.client as gc
 
+def _match_to_keytuple(match):
+    return [gc.KeyTuple(key, value) for key, value in match.items()]
+
 class BFRuntimeSwitchConnection:
 
     def __init__(self, grpc_addr='localhost:50052', device_id=0,
@@ -34,8 +37,7 @@ class BFRuntimeSwitchConnection:
     def insert_table_entry(self, table_name, match_list, action_list):
         table_object = self._table_get(table_name)
         table_key_list = [table_object.make_key(
-            [gc.KeyTuple(key, value) for key, value in match.items()]
-            ) for match in match_list]
+            _match_to_keytuple(match)) for match in match_list]
         table_action_list = [table_object.make_data(
             [gc.DataTuple(key, value) for key, value in action_data.items()],
             action_code
@@ -46,7 +48,6 @@ class BFRuntimeSwitchConnection:
     def remove_table_entry(self, table_name, match_list):
         table_object = self._table_get(table_name)
         table_key_list = [table_object.make_key(
-            [gc.KeyTuple(key, value) for key, value in match.items()]
-            ) for match in match_list]
+            _match_to_keytuple(match)) for match in match_list]
         table_object.entry_del(self.dev_target, table_key_list,
                                p4_name=self.program_name)
