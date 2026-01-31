@@ -51,3 +51,14 @@ class BFRuntimeSwitchConnection:
             _match_to_keytuple(match)) for match in match_list]
         table_object.entry_del(self.dev_target, table_key_list,
                                p4_name=self.program_name)
+
+    def read_table_entry(self, table_name, match_list, from_hw=False,
+                         action_list_filter=None):
+        table_object = self._table_get(table_name)
+        table_key_list = [table_object.make_key(
+            _match_to_keytuple(match)) for match in match_list]
+        entry_list = [entry.to_dict() for entry, _ in table_object.entry_get(
+            self.dev_target, table_key_list, flags={"from_hw": from_hw},
+            required_data=action_list_filter,
+            p4_name=self.program_name)]
+        return entry_list
