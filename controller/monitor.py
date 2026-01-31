@@ -35,3 +35,13 @@ class BFRuntimeMonitor:
             INGRESS_COUNTER_TABLE_BFRUNTIME, [ingress_match])
         self.switch_connection.remove_table_entry(
             EGRESS_COUNTER_TABLE_BFRUNTIME, [egress_match])
+
+    def read_rx_counter(self, flow_selector):
+        ingress_match = {
+            "ig_intr_md.ingress_port": flow_selector.ingress_port,
+            "ig_tm_md.ucast_egress_port": flow_selector.egress_port,
+            }
+        table_entry = self.switch_connection.read_table_entry(
+            INGRESS_COUNTER_TABLE_BFRUNTIME, [ingress_match], from_hw=True)[0]
+        rx_count = table_entry["$COUNTER_SPEC_BYTES"]
+        return rx_count
