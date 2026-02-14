@@ -116,4 +116,20 @@ control int_event_egress(
     }
 }
 
+control int_event_mirror(
+        in egress_intrinsic_metadata_for_deparser_t eg_dprsr_md,
+        in egress_intrinsic_metadata_t eg_intr_md,
+        in MirrorId_t mirror_session,
+        in egr_port_mirror_h egr_port_mirror)
+{
+    Mirror(EGR_PORT_MIRROR) int_mirror;
+    apply {
+        if (eg_dprsr_md.mirror_type == EGR_PORT_MIRROR) {
+            int_mirror.emit<egr_port_mirror_h>(
+                mirror_session, egr_port_mirror
+            );
+        }
+    }
+}
+
 #endif /* __INT_XD__ */
