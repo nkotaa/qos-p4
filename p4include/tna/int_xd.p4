@@ -42,4 +42,46 @@ control int_source_ingress(
     }
 }
 
+control int_event_egress(
+        in egress_intrinsic_metadata_t eg_intr_md,
+        inout egress_intrinsic_metadata_for_deparser_t eg_dprsr_md,
+        out MirrorId_t mirror_session,
+        in telem_md_ingr_t telem_md_ingr,
+        out egr_port_mirror_h egr_port_mirror)
+{
+    Register<bit<32>, flow_count_idx_t>(FLOW_COUNT, 0) sflow_counts;
+    RegisterParam<bit<32>>(1000) sflow_freq;
+    RegisterAction<bit<32>, flow_count_idx_t, bool>(
+        reg=sflow_counts) do_sflow = {
+        void apply(inout bit<32> reg_value, out bool is_sflow) {
+            if (reg_value < sflow_freq.read()) {
+                reg_value = reg_value + 1;
+                is_sflow = false;
+            } else {
+                reg_value = 1;
+                is_sflow = true;
+            }
+        }
+    };
+    action trigger_sflow_count() {
+        is_sflow = do_sflow.execute(telem_md_ingr.flow_id);
+    }
+
+    table sample_flow_count {
+        key = {
+            telem_md_ingr.flow_id: exact;
+        }
+        actions = {
+            trigger_sflow_count;
+            NoAction;
+        }
+        default_action = NoAction();
+        size = FLOW_COUNT;
+    }
+
+    apply {
+        sample_flow_count.apply();
+    }
+}
+
 #endif /* __INT_XD__ */
