@@ -116,6 +116,35 @@ control int_event_egress(
     }
 }
 
+control stage_int_report_egress(
+        in egr_port_mirror_h egr_port_mirror,
+        out int_report_h int_report)
+{
+    action encapsulate_int_report() {
+        int_report.setValid();
+        int_report.header_type = HEADER_TYPE_INT_REPORT;
+        int_report.ingress_port = egr_port_mirror.ingress_port;
+        int_report.ingress_global_tstamp =
+            egr_port_mirror.ingress_global_tstamp;
+        int_report.rx_count = egr_port_mirror.rx_count;
+        int_report.egress_port = egr_port_mirror.egress_port;
+        int_report.enq_qdepth = egr_port_mirror.enq_qdepth;
+        int_report.enq_congest_stat = egr_port_mirror.enq_congest_stat;
+        int_report.deq_qdepth = egr_port_mirror.deq_qdepth;
+        int_report.deq_congest_stat = egr_port_mirror.deq_congest_stat;
+        int_report.app_pool_congest_stat =
+            egr_port_mirror.app_pool_congest_stat;
+        int_report.deq_timedelta = egr_port_mirror.deq_timedelta;
+    }
+
+    apply{
+        if (!egr_port_mirror.isValid()) {
+            return;
+        }
+        encapsulate_int_report();
+    }
+}
+
 control int_event_mirror(
         in egress_intrinsic_metadata_for_deparser_t eg_dprsr_md,
         in egress_intrinsic_metadata_t eg_intr_md,
