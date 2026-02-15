@@ -3,9 +3,9 @@
 import grpc
 import warnings
 
-from service.virtual_circuit import virtual_circuit_pb2 as service_dot_virtual__circuit__pb2
+from service.virtual_circuit import virtual_circuit_pb2 as virtual__circuit__pb2
 
-GRPC_GENERATED_VERSION = '1.74.0'
+GRPC_GENERATED_VERSION = '1.78.0'
 GRPC_VERSION = grpc.__version__
 _version_not_supported = False
 
@@ -18,7 +18,7 @@ except ImportError:
 if _version_not_supported:
     raise RuntimeError(
         f'The grpc package installed is at version {GRPC_VERSION},'
-        + f' but the generated code in service/virtual_circuit_pb2_grpc.py depends on'
+        + ' but the generated code in virtual_circuit_pb2_grpc.py depends on'
         + f' grpcio>={GRPC_GENERATED_VERSION}.'
         + f' Please upgrade your grpc module to grpcio>={GRPC_GENERATED_VERSION}'
         + f' or downgrade your generated code using grpcio-tools<={GRPC_VERSION}.'
@@ -36,13 +36,13 @@ class VirtualCircuitStub(object):
         """
         self.SetUp = channel.unary_unary(
                 '/virtual_circuit.v1.VirtualCircuit/SetUp',
-                request_serializer=service_dot_virtual__circuit__pb2.SetUpRequest.SerializeToString,
-                response_deserializer=service_dot_virtual__circuit__pb2.SetUpResponse.FromString,
+                request_serializer=virtual__circuit__pb2.SetUpRequest.SerializeToString,
+                response_deserializer=virtual__circuit__pb2.SetUpResponse.FromString,
                 _registered_method=True)
         self.TearDown = channel.unary_unary(
                 '/virtual_circuit.v1.VirtualCircuit/TearDown',
-                request_serializer=service_dot_virtual__circuit__pb2.TearDownRequest.SerializeToString,
-                response_deserializer=service_dot_virtual__circuit__pb2.TearDownResponse.FromString,
+                request_serializer=virtual__circuit__pb2.TearDownRequest.SerializeToString,
+                response_deserializer=virtual__circuit__pb2.TearDownResponse.FromString,
                 _registered_method=True)
 
 
@@ -66,13 +66,13 @@ def add_VirtualCircuitServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'SetUp': grpc.unary_unary_rpc_method_handler(
                     servicer.SetUp,
-                    request_deserializer=service_dot_virtual__circuit__pb2.SetUpRequest.FromString,
-                    response_serializer=service_dot_virtual__circuit__pb2.SetUpResponse.SerializeToString,
+                    request_deserializer=virtual__circuit__pb2.SetUpRequest.FromString,
+                    response_serializer=virtual__circuit__pb2.SetUpResponse.SerializeToString,
             ),
             'TearDown': grpc.unary_unary_rpc_method_handler(
                     servicer.TearDown,
-                    request_deserializer=service_dot_virtual__circuit__pb2.TearDownRequest.FromString,
-                    response_serializer=service_dot_virtual__circuit__pb2.TearDownResponse.SerializeToString,
+                    request_deserializer=virtual__circuit__pb2.TearDownRequest.FromString,
+                    response_serializer=virtual__circuit__pb2.TearDownResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -100,8 +100,8 @@ class VirtualCircuit(object):
             request,
             target,
             '/virtual_circuit.v1.VirtualCircuit/SetUp',
-            service_dot_virtual__circuit__pb2.SetUpRequest.SerializeToString,
-            service_dot_virtual__circuit__pb2.SetUpResponse.FromString,
+            virtual__circuit__pb2.SetUpRequest.SerializeToString,
+            virtual__circuit__pb2.SetUpResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -127,8 +127,8 @@ class VirtualCircuit(object):
             request,
             target,
             '/virtual_circuit.v1.VirtualCircuit/TearDown',
-            service_dot_virtual__circuit__pb2.TearDownRequest.SerializeToString,
-            service_dot_virtual__circuit__pb2.TearDownResponse.FromString,
+            virtual__circuit__pb2.TearDownRequest.SerializeToString,
+            virtual__circuit__pb2.TearDownResponse.FromString,
             options,
             channel_credentials,
             insecure,

@@ -7,10 +7,16 @@ service VirtualCircuit {
   rpc TearDown(TearDownRequest) returns (TearDownResponse);
 }
 
+message DataFlow {
+  optional uint32 ingress_port = 1;
+  optional uint32 source_vlanid = 2;
+  optional uint32 egress_port = 3;
+  optional uint32 dest_vlanid = 4;
+}
+
 message SetUpRequest {
-  uint64 a_side_id = 1;
-  uint64 b_side_id = 2;
-  uint64 bandwidth_kbps = 3;
+  DataFlow flow_selector = 1;
+  uint64 bandwidth_kbps = 2;
 }
 
 message SetUpResponse {
@@ -18,8 +24,7 @@ message SetUpResponse {
 }
 
 message TearDownRequest {
-  uint64 a_side_id = 1;
-  uint64 b_side_id = 2;
+  DataFlow flow_selector = 1;
 }
 
 message TearDownResponse {
