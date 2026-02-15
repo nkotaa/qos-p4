@@ -6,47 +6,19 @@ from service.virtual_circuit import virtual_circuit_pb2_grpc
 
 logger = logging.getLogger(__name__)
 
-def set_up_virtual_circuit(intserv, a_side_interface,
-                           b_side_interface, bandwidth_kbps):
-    try:
-        flow_selector = intserv.create_flow_selector(
-            ingress_port=b_side_interface.port,
-            source_vlanid=a_side_interface.vlan_id,
-            egress_port=a_side_interface.port,
-            )
-        intserv.set_guaranteed(flow_selector, bandwidth_kbps=bandwidth_kbps)
-    except RuntimeError as err:
-        raise RuntimeError("Virtual circuit not set up")
-
-def tear_down_virtual_circuit(intserv, a_side_interface,
-                              b_side_interface):
-    try:
-        flow_selector = intserv.create_flow_selector(
-            ingress_port=b_side_interface.port,
-            source_vlanid=a_side_interface.vlan_id,
-            egress_port=a_side_interface.port,
-            )
-        intserv.set_best_effort(flow_selector)
-    except RuntimeError as err:
-        raise RuntimeError("Virtual circuit not torn down")
-
 class VirtualCircuitServicer(virtual_circuit_pb2_grpc.VirtualCircuitServicer):
 
-    def __init__(self, intserv, get_virtual_interface):
+    def __init__(self, intserv):
         self.intserv = intserv
-        self.get_virtual_interface = get_virtual_interface
 
     def SetUp(self, request, context):
         logger.info('Received SetUpRequest: ' + str(request) + ' from ' + context.peer())
         is_virtual_circuit_set_up = False
         try:
-            a_side_interface = self.get_virtual_interface(member_id=request.a_side_id)
-            b_side_interface = self.get_virtual_interface(member_id=request.b_side_id)
-            set_up_virtual_circuit(self.intserv, a_side_interface,
-                                   b_side_interface, request.bandwidth_kbps)
+            self.intserv.set_guaranteed(request.flow_selector, request.bandwidth_kbps)
             is_virtual_circuit_set_up = True
         except RuntimeError as err:
-            raise NotImplementedError
+            raise RuntimeError("Virtual circuit not set up")
         return virtual_circuit_pb2.SetUpResponse(
             is_success=is_virtual_circuit_set_up,
             )
@@ -55,13 +27,10 @@ class VirtualCircuitServicer(virtual_circuit_pb2_grpc.VirtualCircuitServicer):
         logger.info('Received TearDownRequest: ' + str(request) + ' from ' + context.peer())
         is_virtual_circuit_torn_down = False
         try:
-            a_side_interface = self.get_virtual_interface(member_id=request.a_side_id)
-            b_side_interface = self.get_virtual_interface(member_id=request.b_side_id)
-            tear_down_virtual_circuit(self.intserv, a_side_interface,
-                                      b_side_interface)
+            self.intserv.set_best_effort(request.flow_selector)
             is_virtual_circuit_torn_down = True
         except RuntimeError as err:
-            raise NotImplementedError
+            raise RuntimeError("Virtual circuit not torn down")
         return virtual_circuit_pb2.TearDownResponse(
             is_success=is_virtual_circuit_torn_down,
             )
