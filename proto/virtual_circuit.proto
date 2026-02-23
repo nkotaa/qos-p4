@@ -2,20 +2,15 @@ syntax = "proto3";
 
 package virtual_circuit.v1;
 
+import "flow.proto";
+
 service VirtualCircuit {
   rpc SetUp(SetUpRequest) returns (SetUpResponse);
   rpc TearDown(TearDownRequest) returns (TearDownResponse);
 }
 
-message DataFlow {
-  optional uint32 ingress_port = 1;
-  optional uint32 source_vlanid = 2;
-  optional uint32 egress_port = 3;
-  optional uint32 dest_vlanid = 4;
-}
-
 message SetUpRequest {
-  DataFlow flow_selector = 1;
+  Flow flow_selector = 1;
   uint64 bandwidth_kbps = 2;
 }
 
@@ -24,7 +19,7 @@ message SetUpResponse {
 }
 
 message TearDownRequest {
-  DataFlow flow_selector = 1;
+  Flow flow_selector = 1;
 }
 
 message TearDownResponse {
