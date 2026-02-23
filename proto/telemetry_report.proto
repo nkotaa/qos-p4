@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package virtual_circuit.v1;
+
+import "flow.proto";
+
+message TelemetryReport {
+  Flow flow_id = 1;
+  uint64 rx_byte_count = 2;
+  uint64 tx_byte_count = 3;
+}
