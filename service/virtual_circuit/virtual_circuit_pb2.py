@@ -22,25 +22,24 @@ _runtime_version.ValidateProtobufRuntimeVersion(
 _sym_db = _symbol_database.Default()
 
 
+import service.flow_pb2 as flow__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x15virtual_circuit.proto\x12\x12virtual_circuit.v1\"\xb8\x01\n\x08\x44\x61taFlow\x12\x19\n\x0cingress_port\x18\x01 \x01(\rH\x00\x88\x01\x01\x12\x1a\n\rsource_vlanid\x18\x02 \x01(\rH\x01\x88\x01\x01\x12\x18\n\x0b\x65gress_port\x18\x03 \x01(\rH\x02\x88\x01\x01\x12\x18\n\x0b\x64\x65st_vlanid\x18\x04 \x01(\rH\x03\x88\x01\x01\x42\x0f\n\r_ingress_portB\x10\n\x0e_source_vlanidB\x0e\n\x0c_egress_portB\x0e\n\x0c_dest_vlanid\"[\n\x0cSetUpRequest\x12\x33\n\rflow_selector\x18\x01 \x01(\x0b\x32\x1c.virtual_circuit.v1.DataFlow\x12\x16\n\x0e\x62\x61ndwidth_kbps\x18\x02 \x01(\x04\"#\n\rSetUpResponse\x12\x12\n\nis_success\x18\x01 \x01(\x08\"F\n\x0fTearDownRequest\x12\x33\n\rflow_selector\x18\x01 \x01(\x0b\x32\x1c.virtual_circuit.v1.DataFlow\"&\n\x10TearDownResponse\x12\x12\n\nis_success\x18\x01 \x01(\x08\x32\xb5\x01\n\x0eVirtualCircuit\x12L\n\x05SetUp\x12 .virtual_circuit.v1.SetUpRequest\x1a!.virtual_circuit.v1.SetUpResponse\x12U\n\x08TearDown\x12#.virtual_circuit.v1.TearDownRequest\x1a$.virtual_circuit.v1.TearDownResponseb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x15virtual_circuit.proto\x12\x12virtual_circuit.v1\x1a\nflow.proto\"W\n\x0cSetUpRequest\x12/\n\rflow_selector\x18\x01 \x01(\x0b\x32\x18.virtual_circuit.v1.Flow\x12\x16\n\x0e\x62\x61ndwidth_kbps\x18\x02 \x01(\x04\"#\n\rSetUpResponse\x12\x12\n\nis_success\x18\x01 \x01(\x08\"B\n\x0fTearDownRequest\x12/\n\rflow_selector\x18\x01 \x01(\x0b\x32\x18.virtual_circuit.v1.Flow\"&\n\x10TearDownResponse\x12\x12\n\nis_success\x18\x01 \x01(\x08\x32\xb5\x01\n\x0eVirtualCircuit\x12L\n\x05SetUp\x12 .virtual_circuit.v1.SetUpRequest\x1a!.virtual_circuit.v1.SetUpResponse\x12U\n\x08TearDown\x12#.virtual_circuit.v1.TearDownRequest\x1a$.virtual_circuit.v1.TearDownResponseb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'virtual_circuit_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
-  _globals['_DATAFLOW']._serialized_start=46
-  _globals['_DATAFLOW']._serialized_end=230
-  _globals['_SETUPREQUEST']._serialized_start=232
-  _globals['_SETUPREQUEST']._serialized_end=323
-  _globals['_SETUPRESPONSE']._serialized_start=325
-  _globals['_SETUPRESPONSE']._serialized_end=360
-  _globals['_TEARDOWNREQUEST']._serialized_start=362
-  _globals['_TEARDOWNREQUEST']._serialized_end=432
-  _globals['_TEARDOWNRESPONSE']._serialized_start=434
-  _globals['_TEARDOWNRESPONSE']._serialized_end=472
-  _globals['_VIRTUALCIRCUIT']._serialized_start=475
-  _globals['_VIRTUALCIRCUIT']._serialized_end=656
+  _globals['_SETUPREQUEST']._serialized_start=57
+  _globals['_SETUPREQUEST']._serialized_end=144
+  _globals['_SETUPRESPONSE']._serialized_start=146
+  _globals['_SETUPRESPONSE']._serialized_end=181
+  _globals['_TEARDOWNREQUEST']._serialized_start=183
+  _globals['_TEARDOWNREQUEST']._serialized_end=249
+  _globals['_TEARDOWNRESPONSE']._serialized_start=251
+  _globals['_TEARDOWNRESPONSE']._serialized_end=289
+  _globals['_VIRTUALCIRCUIT']._serialized_start=292
+  _globals['_VIRTUALCIRCUIT']._serialized_end=473
 # @@protoc_insertion_point(module_scope)

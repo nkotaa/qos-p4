@@ -1,3 +1,4 @@
+import service.flow_pb2 as _flow_pb2
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
 from collections.abc import Mapping as _Mapping
@@ -5,25 +6,13 @@ from typing import ClassVar as _ClassVar, Optional as _Optional, Union as _Union
 
 DESCRIPTOR: _descriptor.FileDescriptor
 
-class DataFlow(_message.Message):
-    __slots__ = ("ingress_port", "source_vlanid", "egress_port", "dest_vlanid")
-    INGRESS_PORT_FIELD_NUMBER: _ClassVar[int]
-    SOURCE_VLANID_FIELD_NUMBER: _ClassVar[int]
-    EGRESS_PORT_FIELD_NUMBER: _ClassVar[int]
-    DEST_VLANID_FIELD_NUMBER: _ClassVar[int]
-    ingress_port: int
-    source_vlanid: int
-    egress_port: int
-    dest_vlanid: int
-    def __init__(self, ingress_port: _Optional[int] = ..., source_vlanid: _Optional[int] = ..., egress_port: _Optional[int] = ..., dest_vlanid: _Optional[int] = ...) -> None: ...
-
 class SetUpRequest(_message.Message):
     __slots__ = ("flow_selector", "bandwidth_kbps")
     FLOW_SELECTOR_FIELD_NUMBER: _ClassVar[int]
     BANDWIDTH_KBPS_FIELD_NUMBER: _ClassVar[int]
-    flow_selector: DataFlow
+    flow_selector: _flow_pb2.Flow
     bandwidth_kbps: int
-    def __init__(self, flow_selector: _Optional[_Union[DataFlow, _Mapping]] = ..., bandwidth_kbps: _Optional[int] = ...) -> None: ...
+    def __init__(self, flow_selector: _Optional[_Union[_flow_pb2.Flow, _Mapping]] = ..., bandwidth_kbps: _Optional[int] = ...) -> None: ...
 
 class SetUpResponse(_message.Message):
     __slots__ = ("is_success",)
@@ -34,8 +23,8 @@ class SetUpResponse(_message.Message):
 class TearDownRequest(_message.Message):
     __slots__ = ("flow_selector",)
     FLOW_SELECTOR_FIELD_NUMBER: _ClassVar[int]
-    flow_selector: DataFlow
-    def __init__(self, flow_selector: _Optional[_Union[DataFlow, _Mapping]] = ...) -> None: ...
+    flow_selector: _flow_pb2.Flow
+    def __init__(self, flow_selector: _Optional[_Union[_flow_pb2.Flow, _Mapping]] = ...) -> None: ...
 
 class TearDownResponse(_message.Message):
     __slots__ = ("is_success",)
