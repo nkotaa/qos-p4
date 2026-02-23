@@ -1,6 +1,8 @@
 import logging
 import grpc
 
+from concurrent import futures
+
 from service.virtual_circuit import virtual_circuit_pb2
 from service.virtual_circuit import virtual_circuit_pb2_grpc
 
@@ -34,3 +36,12 @@ class VirtualCircuitServicer(virtual_circuit_pb2_grpc.VirtualCircuitServicer):
         return virtual_circuit_pb2.TearDownResponse(
             is_success=is_virtual_circuit_torn_down,
             )
+
+def start_server(intserv, address="localhost:50051"):
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+    virtual_circuit_pb2_grpc.add_VirtualCircuitServicer_to_server(
+        VirtualCircuitServicer(intserv), server)
+    server.add_insecure_port(address)
+    server.start()
+    logger.info('Virtual circuit server started, listening on ' + address)
+    return server
