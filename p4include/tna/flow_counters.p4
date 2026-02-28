@@ -1,9 +1,9 @@
-#ifndef __RX_TX_COUNTERS__
-#define __RX_TX_COUNTERS__
+#ifndef __FLOW_COUNTERS__
+#define __FLOW_COUNTERS__
 
 control rx_counters_ingress(
-        in ingress_intrinsic_metadata_t ig_intr_md,
-        in ingress_intrinsic_metadata_for_tm_t ig_tm_md)
+        in ingress_intrinsic_metadata_for_tm_t ig_tm_md,
+        in flow_count_idx_t flow_id)
 {
     DirectCounter<bit<64>>(CounterType_t.PACKETS_AND_BYTES) rx_counters;
 
@@ -13,13 +13,13 @@ control rx_counters_ingress(
 
     table count_rx {
         key = {
-            ig_intr_md.ingress_port: exact;
-            ig_tm_md.ucast_egress_port: exact;
+            flow_id: exact;
+            ig_tm_md.qid: range;
         }
         actions = {
             counts;
         }
-        size = 128;
+        size = 1<<(FLOW_COUNT_INDEX_WIDTH + QUEUE_ID_WIDTH);
         counters = rx_counters;
     }
 
@@ -29,8 +29,9 @@ control rx_counters_ingress(
 }
 
 control tx_counters_egress(
-        in egress_metadata_t meta,
-        in egress_intrinsic_metadata_t eg_intr_md)
+        in egress_intrinsic_metadata_t eg_intr_md,
+        in egress_intrinsic_metadata_for_deparser_t eg_dprsr_md,
+        in flow_count_idx_t flow_id)
 {
     DirectCounter<bit<64>>(CounterType_t.PACKETS_AND_BYTES) tx_counters;
 
@@ -40,13 +41,14 @@ control tx_counters_egress(
 
     table count_tx {
         key = {
-            meta.ingress_port: exact;
-            eg_intr_md.egress_port: exact;
+            flow_id: exact;
+            eg_intr_md.egress_qid: range;
+            eg_dprsr_md.drop_ctl[0:0]: exact @name("is_marked_drop");
         }
         actions = {
             counts;
         }
-        size = 128;
+        size = 1<<(FLOW_COUNT_INDEX_WIDTH + QUEUE_ID_WIDTH + 1);
         counters = tx_counters;
     }
 
@@ -55,4 +57,4 @@ control tx_counters_egress(
     }
 }
 
-#endif /* __RX_TX_COUNTERS__ */
+#endif /* __FLOW_COUNTERS__ */
