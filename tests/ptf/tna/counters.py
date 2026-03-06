@@ -4,6 +4,8 @@ import bfrt_grpc.bfruntime_pb2 as bfruntime_pb2
 import bfrt_grpc.client as gc
 import p4testutils.misc_utils as misc_utils
 
+from base_test import FlowTest
+
 try:
     import controller
 except ImportError:
@@ -17,39 +19,28 @@ from controller.flow import DataFlow
 
 program_name = testutils.test_param_get("p4_name")
 pkt_len = int(testutils.test_param_get("pkt_len", "128"))
+num_pkts = int(testutils.test_param_get("num_pkts", "2"))
+source_mac = testutils.test_param_get("src_mac", "11:33:55:77:99:00")
+dest_mac = testutils.test_param_get("dst_mac", "00:11:22:33:44:55")
 
 logger = misc_utils.get_logger()
-logger.info("Test called with params %s", str(testutils.test_params_get()))
-
-sw_ports = misc_utils.get_sw_ports()
-ingress_port = int(testutils.test_param_get("igr_port", sw_ports[1]))
-egress_port = int(testutils.test_param_get("egr_port", sw_ports[2]))
 
 def _set_up_monitor_controller():
     switch_connection = BFRuntimeSwitchConnection(program_name=program_name)
     return BFRuntimeMonitor(switch_connection)
 
-class ControllerTest(BfRuntimeTest):
+class MonitorControllerTest(FlowTest):
 
     def setUp(self):
-        client_id = 0
-        BfRuntimeTest.setUp(self, client_id, program_name)
+        FlowTest.setUp(self)
         self.monitor = _set_up_monitor_controller()
         self.flow_selector = DataFlow(ingress_port=ingress_port,
                                       egress_port=egress_port)
 
     def runTest(self):
-        source_mac = "11:33:55:77:99:00"
-        dest_mac = "00:11:22:33:44:55"
-
-        logger.info("Checking if MAC forwarding rules present in switch")
-        pkt = testutils.simple_tcp_packet(eth_src=source_mac, eth_dst=dest_mac)
-        testutils.send_packet(self, ingress_port, pkt)
-        testutils.verify_packets(self, pkt, [egress_port])
-
         pkt = testutils.simple_tcp_packet(eth_src=source_mac, eth_dst=dest_mac,
                                           pktlen=pkt_len)
-        num_pkts = 2
+        super().check_port_forwarding(pkt)
 
         self.monitor.start_counter(self.flow_selector)
         testutils.send_packet(self, ingress_port, pkt, count=num_pkts)
@@ -65,4 +56,4 @@ class ControllerTest(BfRuntimeTest):
 
     def tearDown(self):
         self.monitor.stop_counter(self.flow_selector)
-        BfRuntimeTest.tearDown(self)
+        FlowTest.tearDown(self)
