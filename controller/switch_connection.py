@@ -13,9 +13,6 @@ except ImportError:
     sys.path.append(os.path.join(SDE_PYTHON3, 'tofino', 'bfrt_grpc'))
     import bfrt_grpc.client as gc
 
-def _match_to_keytuple(match):
-    return [gc.KeyTuple(key, value) for key, value in match.items()]
-
 class BFRuntimeSwitchConnection:
 
     def __init__(self, grpc_addr='localhost:50052', device_id=0,
@@ -34,10 +31,21 @@ class BFRuntimeSwitchConnection:
     def _table_get(self, table_name):
         return self.bfrt_info.table_get(self.pipe_name + '.' + table_name)
 
+    def make_match(self, key_list):
+        return [gc.KeyTuple(
+            expr,
+            value=match_kind.get("value"),
+            mask=match_kind.get("mask"),
+            prefix_len=match_kind.get("prefix_len"),
+            low=match_kind.get("low"),
+            high=match_kind.get("high"),
+            is_valid=match_kind.get("is_valid")
+            ) for (expr, match_kind) in key_list]
+
     def insert_table_entry(self, table_name, match_list, action_list):
         table_object = self._table_get(table_name)
         table_key_list = [table_object.make_key(
-            _match_to_keytuple(match)) for match in match_list]
+            match) for match in match_list]
         table_action_list = [table_object.make_data(
             [gc.DataTuple(key, value) for key, value in action_data.items()],
             action_code
@@ -48,7 +56,7 @@ class BFRuntimeSwitchConnection:
     def remove_table_entry(self, table_name, match_list):
         table_object = self._table_get(table_name)
         table_key_list = [table_object.make_key(
-            _match_to_keytuple(match)) for match in match_list]
+            match) for match in match_list]
         table_object.entry_del(self.dev_target, table_key_list,
                                p4_name=self.program_name)
 
@@ -56,7 +64,7 @@ class BFRuntimeSwitchConnection:
                          action_list_filter=None):
         table_object = self._table_get(table_name)
         table_key_list = [table_object.make_key(
-            _match_to_keytuple(match)) for match in match_list]
+            match) for match in match_list]
         entry_list = [entry.to_dict() for entry, _ in table_object.entry_get(
             self.dev_target, table_key_list, flags={"from_hw": from_hw},
             required_data=action_list_filter,
