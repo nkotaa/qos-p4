@@ -1,50 +1,28 @@
 INGRESS_METER_TABLE_BFRUNTIME = "Ingress.flow_meters_ingress.execute_ig_meter"
-EGRESS_METER_TABLE_BFRUNTIME = "Egress.flow_meters_egress.execute_eg_meter"
+BEST_EFFORT_BANDWIDTH_KBPS = 100000000
+BEST_EFFORT_BURST_RATE_KBPS = 1000000
 
 class BFRuntimeIntServ:
 
     def __init__(self, switch_connection):
         self.switch_connection = switch_connection
 
-    def set_guaranteed(self, flow_selector, bandwidth_kbps):
-        ingress_match_list = [{
-            "hdr.vlan.vid": flow_selector.source_vlanid,
-            "meta.pipe_id": pipe_id,
-            "ig_tm_md.ucast_egress_port": flow_selector.egress_port,
-            } for pipe_id in range(2)]
-        ingress_action = ('Ingress.flow_meters_ingress.invoke_flow_meter', {
-            "$METER_SPEC_CIR_KBPS": 0,
-            "$METER_SPEC_PIR_KBPS": 25000000,
-            "$METER_SPEC_CBS_KBITS": 100000,
-            "$METER_SPEC_PBS_KBITS": 1000000,
-            })
-        egress_match = {
-            "hdr.vlan.vid": flow_selector.source_vlanid,
-            "eg_intr_md.egress_port": flow_selector.egress_port,
-            }
-        egress_action = ('Egress.flow_meters_egress.invoke_flow_meter', {
+    def set_guaranteed(self, flow_id, bandwidth_kbps, burst_rate_kbps=10000):
+        ingress_match = self.switch_connection.make_match([
+            ("flow_id", {"value": flow_id}),
+            ])
+        ingress_action = ('Ingress.flow_meters_ingress.set_color', {
             "$METER_SPEC_CIR_KBPS": bandwidth_kbps,
-            "$METER_SPEC_PIR_KBPS": 25000000,
-            "$METER_SPEC_CBS_KBITS": 100000,
-            "$METER_SPEC_PBS_KBITS": 1000000,
+            "$METER_SPEC_PIR_KBPS": BEST_EFFORT_BANDWIDTH_KBPS,
+            "$METER_SPEC_CBS_KBITS": burst_rate_kbps,
+            "$METER_SPEC_PBS_KBITS": BEST_EFFORT_BURST_RATE_KBPS,
             })
         self.switch_connection.insert_table_entry(
-            INGRESS_METER_TABLE_BFRUNTIME, ingress_match_list,
-            [ingress_action, ingress_action])
-        self.switch_connection.insert_table_entry(
-            EGRESS_METER_TABLE_BFRUNTIME, [egress_match], [egress_action])
+            INGRESS_METER_TABLE_BFRUNTIME, [ingress_match], [ingress_action])
 
-    def set_best_effort(self, flow_selector):
-        ingress_match_list = [{
-            "hdr.vlan.vid": flow_selector.source_vlanid,
-            "meta.pipe_id": pipe_id,
-            "ig_tm_md.ucast_egress_port": flow_selector.egress_port,
-            } for pipe_id in range(2)]
-        egress_match = {
-            "hdr.vlan.vid": flow_selector.source_vlanid,
-            "eg_intr_md.egress_port": flow_selector.egress_port,
-            }
+    def set_best_effort(self, flow_id):
+        ingress_match = self.switch_connection.make_match([
+            ("flow_id", {"value": flow_id}),
+            ])
         self.switch_connection.remove_table_entry(
-            INGRESS_METER_TABLE_BFRUNTIME, ingress_match_list)
-        self.switch_connection.remove_table_entry(
-            EGRESS_METER_TABLE_BFRUNTIME, [egress_match])
+            INGRESS_METER_TABLE_BFRUNTIME, [ingress_match])
