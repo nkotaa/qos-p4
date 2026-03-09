@@ -7,8 +7,7 @@ import p4testutils.misc_utils as misc_utils
 from base_test import FlowTest
 
 program_name = testutils.test_param_get("p4_name")
-pkt_len = int(testutils.test_param_get("pkt_len", "128"))
-num_pkts = int(testutils.test_param_get("num_pkts", "1"))
+num_pkts = int(testutils.test_param_get("num_pkts", "1001"))
 source_mac = testutils.test_param_get("src_mac", "11:33:55:77:99:00")
 dest_mac = testutils.test_param_get("dst_mac", "00:11:22:33:44:55")
 mirror_session_id = int(testutils.test_param_get("mirr_sesid", 13))
@@ -77,3 +76,34 @@ class INTProgramTest(FlowTest):
     def tearDown(self):
         self._clean_up()
         FlowTest.tearDown(self)
+
+class INTEventTest(INTProgramTest):
+
+    def setUp(self):
+        super().setUp()
+
+    def runTest(self):
+        pkt = testutils.simple_tcp_packet(eth_src=source_mac, eth_dst=dest_mac,
+                                          dl_vlan_enable=True, vlan_vid=self.vlan_vid)
+        super().check_port_forwarding(pkt)
+
+        self._program_int_source_table()
+        self._program_sample_flow_table()
+        self._program_int_event_table()
+        self._program_mirror_session_table()
+
+        testutils.send_packet(self, self.ingress_port, pkt, count=num_pkts)
+        testutils.verify_each_packet_on_each_port(self, [pkt] * num_pkts,
+                                                  [self.egress_port] * num_pkts)
+
+        logger.info("Receiving digest reports...")
+        learn_filter = self.bfrt_info.learn_get("telem_digest")
+        digest_list = list(self.interface.digest_get_iterator())
+        for digest in digest_list:
+            data_list = learn_filter.make_data_list(digest)
+            for i in range(len(data_list)):
+                data_dict = data_list[i].to_dict()
+                print(data_dict)
+
+    def tearDown(self):
+        super().tearDown()
