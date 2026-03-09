@@ -36,6 +36,17 @@ class INTProgramTest(FlowTest):
             "Egress.int_event_egress.mirror")
         self.int_event_trigger.entry_add(self.dev_target, [self.key4], [data4])
 
+    def _program_mirror_session_table(self):
+        logger.info("Programming mirror session table for the test...")
+        mirror_cfg_bfrt_data = self.mirror_cfg.make_data([
+            gc.DataTuple('$direction', str_val="EGRESS"),
+            gc.DataTuple('$ucast_egress_port', 68),
+            gc.DataTuple('$ucast_egress_port_valid', bool_val=True),
+            gc.DataTuple('$session_enable', bool_val=True),
+            gc.DataTuple('$max_pkt_len', 1000),
+            ], "$normal")
+        self.mirror_cfg.entry_add(self.dev_target, [self.key5], [ mirror_cfg_bfrt_data ])
+
     def setUp(self):
         FlowTest.setUp(self)
         self.dev_target = gc.Target(device_id=0)
@@ -46,18 +57,22 @@ class INTProgramTest(FlowTest):
             "Egress.int_event_egress.sample_flow_count")
         self.int_event_trigger = self.bfrt_info.table_get(
             "Egress.int_event_egress.int_event_trigger")
+        self.mirror_cfg = self.bfrt_info.table_get("$mirror.cfg")
         self.key2 = self.int_source.make_key([
             gc.KeyTuple('flow_id', self.flow_id)])
         self.key3 = self.sample_flow_count.make_key([
             gc.KeyTuple('telem_md_ingr.flow_id', self.flow_id)])
         self.key4 = self.int_event_trigger.make_key([
             gc.KeyTuple('is_sflow', True)])
+        self.key5 = self.mirror_cfg.make_key([
+            gc.KeyTuple('$sid', mirror_session_id)])
 
     # Remove all table entries
     def _clean_up(self):
         self.int_source.entry_del(self.dev_target, [])
         self.sample_flow_count.entry_del(self.dev_target, [])
         self.int_event_trigger.entry_del(self.dev_target, [])
+        self.mirror_cfg.entry_del(self.dev_target, [])
 
     def tearDown(self):
         self._clean_up()
