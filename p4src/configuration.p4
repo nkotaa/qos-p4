@@ -1,5 +1,5 @@
-#ifndef __DEFINES__
-#define __DEFINES__
+#ifndef __CONFIGURATION__
+#define __CONFIGURATION__
 
 #define FLOW_COUNT_INDEX_WIDTH 8
 #define FLOW_COUNT 1<<FLOW_COUNT_INDEX_WIDTH
@@ -14,4 +14,4 @@ const header_type_t HEADER_TYPE_INT_REPORT = 0xE;
 
 const DigestType_t TELEM_REPORT_DIGEST_TYPE = 1;
 
-#endif /* __DEFINES__ */
+#endif /* __CONFIGURATION__ */
