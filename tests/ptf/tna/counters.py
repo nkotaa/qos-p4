@@ -36,6 +36,7 @@ class MonitorControllerTest(FlowTest):
 
     def runTest(self):
         pkt = testutils.simple_tcp_packet(eth_src=source_mac, eth_dst=dest_mac,
+                                          dl_vlan_enable=True, vlan_vid=self.vlan_vid,
                                           pktlen=pkt_len)
         super().check_port_forwarding(pkt)
 

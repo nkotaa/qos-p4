@@ -17,6 +17,7 @@ class FlowTest(BfRuntimeTest):
 
     ingress_port = ingress_port
     egress_port = egress_port
+    vlan_vid = vlan_vid
     flow_id = flow_id
 
     def _program_flow_watchlist_table(self):
