@@ -44,10 +44,10 @@ control int_source_ingress(
 
 control int_event_egress(
         in egress_intrinsic_metadata_t eg_intr_md,
-        inout egress_intrinsic_metadata_for_deparser_t eg_dprsr_md,
-        out MirrorId_t mirror_session,
         in flow_count_idx_t flow_id,
         in telem_md_ingr_t telem_md_ingr,
+        out MirrorType_t mirror_type,
+        out MirrorId_t mirror_session,
         out egr_port_mirror_h egr_port_mirror)
 {
     Register<bit<32>, flow_count_idx_t>(FLOW_COUNT, 0) sflow_counts;
@@ -70,7 +70,7 @@ control int_event_egress(
     }
     action mirror(out egr_port_mirror_h egr_port_mirror_header,
             MirrorId_t int_mirror_session) {
-        eg_dprsr_md.mirror_type = EGR_PORT_MIRROR;
+        mirror_type = EGR_PORT_MIRROR;
         mirror_session = int_mirror_session;
         egr_port_mirror_header = {
             HEADER_TYPE_EGR_MIRROR,
@@ -138,7 +138,7 @@ control stage_int_report_egress(
         int_report.deq_timedelta = egr_port_mirror.deq_timedelta;
     }
 
-    apply{
+    apply {
         if (!egr_port_mirror.isValid()) {
             return;
         }

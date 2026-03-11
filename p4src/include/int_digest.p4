@@ -2,15 +2,16 @@
 #define __INT_DIGEST__
 
 control stage_int_report_ingress(
-        inout ingress_intrinsic_metadata_for_deparser_t ig_dprsr_md,
-        in int_report_h telem_report)
+        in int_report_h telem_report,
+        out DigestType_t digest_type,
+        out bit<3> drop_ctl)
 {
     apply {
         if (!telem_report.isValid()) {
             return;
         }
-        ig_dprsr_md.digest_type = TELEM_REPORT_DIGEST_TYPE;
-        ig_dprsr_md.drop_ctl = 1;
+        digest_type = TELEM_REPORT_DIGEST_TYPE;
+        drop_ctl = 1;
     }
 }
 
