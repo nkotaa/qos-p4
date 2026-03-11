@@ -5,6 +5,7 @@ control int_source_ingress(
         in ingress_intrinsic_metadata_t ig_intr_md,
         in ingress_intrinsic_metadata_from_parser_t ig_prsr_md,
         in ingress_intrinsic_metadata_for_tm_t ig_tm_md,
+        in flow_count_idx_t flow_id,
         inout telem_md_ingr_t telem_md_ingr)
 {
     Register<bit<32>, flow_count_idx_t>(
@@ -16,7 +17,6 @@ control int_source_ingress(
             rx_count = reg_value;
         }
     };
-    flow_count_idx_t flow_id = telem_md_ingr.flow_id;
 
     action stage_metadata(inout telem_md_ingr_t staged_metadata) {
         bit<32> rx_count = increment_counter.execute(flow_id);
@@ -46,6 +46,7 @@ control int_event_egress(
         in egress_intrinsic_metadata_t eg_intr_md,
         inout egress_intrinsic_metadata_for_deparser_t eg_dprsr_md,
         out MirrorId_t mirror_session,
+        in flow_count_idx_t flow_id,
         in telem_md_ingr_t telem_md_ingr,
         out egr_port_mirror_h egr_port_mirror)
 {
@@ -65,7 +66,7 @@ control int_event_egress(
     };
     bool is_sflow = false;
     action trigger_sflow_count() {
-        is_sflow = do_sflow.execute(telem_md_ingr.flow_id);
+        is_sflow = do_sflow.execute(flow_id);
     }
     action mirror(out egr_port_mirror_h egr_port_mirror_header,
             MirrorId_t int_mirror_session) {
@@ -88,7 +89,7 @@ control int_event_egress(
 
     table sample_flow_count {
         key = {
-            telem_md_ingr.flow_id: exact;
+            flow_id: exact;
         }
         actions = {
             trigger_sflow_count;

@@ -14,7 +14,6 @@
     @flexible bit<18> deq_timedelta
 
 struct telem_md_ingr_t {
-    flow_count_idx_t flow_id;
     PortId_t ingress_port;
     bit<48> ingress_mac_tstamp;
     bit<48> ingress_global_tstamp;
