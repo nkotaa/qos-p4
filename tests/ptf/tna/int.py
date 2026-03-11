@@ -60,7 +60,7 @@ class INTProgramTest(FlowTest):
         self.key2 = self.int_source.make_key([
             gc.KeyTuple('flow_id', self.flow_id)])
         self.key3 = self.sample_flow_count.make_key([
-            gc.KeyTuple('telem_md_ingr.flow_id', self.flow_id)])
+            gc.KeyTuple('flow_id', self.flow_id)])
         self.key4 = self.int_event_trigger.make_key([
             gc.KeyTuple('is_sflow', True)])
         self.key5 = self.mirror_cfg.make_key([
