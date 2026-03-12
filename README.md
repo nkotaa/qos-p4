@@ -1,3 +1,3 @@
-# QoS P4
+# IXP4
 
-Quality of service management on Barefoot Tofino programmable switch.
+Programmable network services at internet exchange points.
