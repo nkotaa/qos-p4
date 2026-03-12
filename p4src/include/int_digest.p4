@@ -1,10 +1,11 @@
 #ifndef __INT_DIGEST__
 #define __INT_DIGEST__
 
-control stage_int_report_ingress(
+control stage_int_digest_exit(
         in int_report_h telem_report,
         out DigestType_t digest_type,
-        out bit<3> drop_ctl)
+        out bit<3> drop_ctl,
+        out bit<1> bypass_egress)
 {
     apply {
         if (!telem_report.isValid()) {
@@ -12,6 +13,8 @@ control stage_int_report_ingress(
         }
         digest_type = TELEM_REPORT_DIGEST_TYPE;
         drop_ctl = 1;
+        bypass_egress = 1w1;
+        exit;
     }
 }
 
