@@ -3,12 +3,13 @@
 
 control rx_counters_ingress(
         in ingress_intrinsic_metadata_for_tm_t ig_tm_md,
-        in flow_count_idx_t flow_id)
+        in flow_count_idx_t flow_id,
+        in bit<32> adjust_byte_count = 0)
 {
     DirectCounter<bit<64>>(CounterType_t.PACKETS_AND_BYTES) rx_counters;
 
     action counts() {
-        rx_counters.count();
+        rx_counters.count(adjust_byte_count = adjust_byte_count);
     }
 
     table count_rx {
@@ -31,12 +32,13 @@ control rx_counters_ingress(
 control tx_counters_egress(
         in egress_intrinsic_metadata_t eg_intr_md,
         in egress_intrinsic_metadata_for_deparser_t eg_dprsr_md,
-        in flow_count_idx_t flow_id)
+        in flow_count_idx_t flow_id,
+        in bit<32> adjust_byte_count = 0)
 {
     DirectCounter<bit<64>>(CounterType_t.PACKETS_AND_BYTES) tx_counters;
 
     action counts() {
-        tx_counters.count();
+        tx_counters.count(adjust_byte_count = adjust_byte_count);
     }
 
     table count_tx {
