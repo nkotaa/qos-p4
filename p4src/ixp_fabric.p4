@@ -58,9 +58,11 @@ control Egress(
         inout egress_intrinsic_metadata_for_deparser_t eg_dprsr_md,
         inout egress_intrinsic_metadata_for_output_port_t eg_oport_md)
 {
+    bridge_h bridge;
+
     apply {
         tx_counters_egress.apply(eg_intr_md, eg_dprsr_md,
-                meta.flow_id);
+                meta.flow_id, sizeInBytes(bridge));
         stage_int_report_egress.apply(meta.egr_port_mirror, hdr.int_report);
         int_event_egress.apply(eg_intr_md, meta.flow_id, meta.telem_md_ingr,
                 eg_dprsr_md.mirror_type, meta.mirror_session,
