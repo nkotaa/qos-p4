@@ -1,4 +1,5 @@
-INGRESS_METER_TABLE_BFRUNTIME = "Ingress.flow_meters_ingress.execute_ig_meter"
+INGRESS_METER_TABLE_BFRUNTIME = "flow_meters_ingress.execute_ig_meter"
+INGRESS_METER_ACTION = "flow_meters_ingress.set_color"
 BEST_EFFORT_BANDWIDTH_KBPS = 100000000
 BEST_EFFORT_BURST_RATE_KBPS = 1000000
 
@@ -11,7 +12,7 @@ class BFRuntimeIntServ:
         ingress_match = self.switch_connection.make_match([
             ("flow_id", {"value": flow_id}),
             ])
-        ingress_action = ('Ingress.flow_meters_ingress.set_color', {
+        ingress_action = (INGRESS_METER_ACTION, {
             "$METER_SPEC_CIR_KBPS": bandwidth_kbps,
             "$METER_SPEC_PIR_KBPS": BEST_EFFORT_BANDWIDTH_KBPS,
             "$METER_SPEC_CBS_KBITS": burst_rate_kbps,
