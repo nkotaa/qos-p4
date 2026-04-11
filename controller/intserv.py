@@ -18,12 +18,12 @@ class BFRuntimeIntServ:
             "$METER_SPEC_CBS_KBITS": burst_rate_kbps,
             "$METER_SPEC_PBS_KBITS": BEST_EFFORT_BURST_RATE_KBPS,
             })
-        self.switch_connection.insert_table_entry(
+        self.switch_connection.set_table_entries(
             INGRESS_METER_TABLE_BFRUNTIME, [ingress_match], [ingress_action])
 
     def set_best_effort(self, flow_id):
         ingress_match = self.switch_connection.make_match([
             ("flow_id", {"value": flow_id}),
             ])
-        self.switch_connection.remove_table_entry(
+        self.switch_connection.remove_table_entries(
             INGRESS_METER_TABLE_BFRUNTIME, [ingress_match])

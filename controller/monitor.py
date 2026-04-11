@@ -14,7 +14,7 @@ class BFRuntimeMonitor:
             ("ig_tm_md.qid", {"low": qid[0], "high": qid[1]}),
             ])
         ingress_action = (INGRESS_COUNT_ACTION, {})
-        self.switch_connection.insert_table_entry(
+        self.switch_connection.set_table_entries(
             INGRESS_COUNTER_TABLE_BFRUNTIME, [ingress_match], [ingress_action])
 
     def start_tx_counter(self, flow_id, qid=(0,31), is_marked_drop=0):
@@ -24,7 +24,7 @@ class BFRuntimeMonitor:
             ("is_marked_drop", {"value": is_marked_drop}),
             ])
         egress_action = (EGRESS_COUNT_ACTION, {})
-        self.switch_connection.insert_table_entry(
+        self.switch_connection.set_table_entries(
             EGRESS_COUNTER_TABLE_BFRUNTIME, [egress_match], [egress_action])
 
     def stop_rx_counter(self, flow_id, qid=(0,31)):
@@ -32,7 +32,7 @@ class BFRuntimeMonitor:
             ("flow_id", {"value": flow_id}),
             ("ig_tm_md.qid", {"low": qid[0], "high": qid[1]}),
             ])
-        self.switch_connection.remove_table_entry(
+        self.switch_connection.remove_table_entries(
             INGRESS_COUNTER_TABLE_BFRUNTIME, [ingress_match])
 
     def stop_tx_counter(self, flow_id, qid=(0,31), is_marked_drop=0):
@@ -41,7 +41,7 @@ class BFRuntimeMonitor:
             ("eg_intr_md.egress_qid", {"low": qid[0], "high": qid[1]}),
             ("is_marked_drop", {"value": is_marked_drop}),
             ])
-        self.switch_connection.remove_table_entry(
+        self.switch_connection.remove_table_entries(
             EGRESS_COUNTER_TABLE_BFRUNTIME, [egress_match])
 
     def read_rx_counter(self, flow_id, qid=(0,31)):
@@ -49,7 +49,7 @@ class BFRuntimeMonitor:
             ("flow_id", {"value": flow_id}),
             ("ig_tm_md.qid", {"low": qid[0], "high": qid[1]}),
             ])
-        table_entry = self.switch_connection.read_table_entry(
+        table_entry = self.switch_connection.read_table_entries(
             INGRESS_COUNTER_TABLE_BFRUNTIME, [ingress_match], from_hw=True)[0]
         rx_count = table_entry["$COUNTER_SPEC_BYTES"]
         return rx_count
@@ -60,7 +60,7 @@ class BFRuntimeMonitor:
             ("eg_intr_md.egress_qid", {"low": qid[0], "high": qid[1]}),
             ("is_marked_drop", {"value": is_marked_drop}),
             ])
-        table_entry = self.switch_connection.read_table_entry(
+        table_entry = self.switch_connection.read_table_entries(
             EGRESS_COUNTER_TABLE_BFRUNTIME, [egress_match], from_hw=True)[0]
         tx_count = table_entry["$COUNTER_SPEC_BYTES"]
         return tx_count
