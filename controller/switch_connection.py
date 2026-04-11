@@ -16,7 +16,7 @@ except ImportError:
 class BFRuntimeSwitchConnection:
 
     def __init__(self, grpc_addr='localhost:50052', device_id=0,
-                 program_name=None, pipe_name='pipe'):
+                 program_name=None, address_prefix=None):
         bfrt_interface = gc.ClientInterface(
             grpc_addr=grpc_addr,
             client_id=random.randint(9, 65535),
@@ -26,10 +26,12 @@ class BFRuntimeSwitchConnection:
         self.dev_target = gc.Target(device_id)
         self.bfrt_info = bfrt_interface.bfrt_info_get(p4_name=program_name)
         self.program_name = self.bfrt_info.p4_name_get()
-        self.pipe_name = pipe_name
+        self.address_prefix = address_prefix
 
     def _table_get(self, table_name):
-        return self.bfrt_info.table_get(self.pipe_name + '.' + table_name)
+        if self.address_prefix is None:
+            return self.bfrt_info.table_get(table_name)
+        return self.bfrt_info.table_get(self.address_prefix + '.' + table_name)
 
     def make_match(self, key_list):
         return [gc.KeyTuple(
