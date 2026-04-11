@@ -42,7 +42,7 @@ class BFRuntimeSwitchConnection:
             is_valid=match_kind.get("is_valid")
             ) for (expr, match_kind) in key_list]
 
-    def insert_table_entry(self, table_name, match_list, action_list):
+    def set_table_entries(self, table_name, match_list, action_list):
         table_object = self._table_get(table_name)
         table_key_list = [table_object.make_key(
             match) for match in match_list]
@@ -50,17 +50,23 @@ class BFRuntimeSwitchConnection:
             [gc.DataTuple(key, value) for key, value in action_data.items()],
             action_code
             ) for action_code, action_data in action_list]
-        table_object.entry_add(self.dev_target, table_key_list,
-                               table_action_list, p4_name=self.program_name)
+        table_object.entry_add_or_mod(
+            self.dev_target, table_key_list, table_action_list,
+            p4_name=self.program_name)
 
-    def remove_table_entry(self, table_name, match_list):
+    def remove_table_entries(self, table_name, match_list):
         table_object = self._table_get(table_name)
         table_key_list = [table_object.make_key(
             match) for match in match_list]
-        table_object.entry_del(self.dev_target, table_key_list,
-                               p4_name=self.program_name)
+        try:
+            table_object.entry_del(self.dev_target, table_key_list,
+                                   p4_name=self.program_name)
+        except gc.BfruntimeReadWriteRpcException as ex:
+            if "Object not found" not in str(ex):
+                raise(ex)
+            print("Key already absent")
 
-    def read_table_entry(self, table_name, match_list, from_hw=False,
+    def read_table_entries(self, table_name, match_list, from_hw=False,
                          action_list_filter=None):
         table_object = self._table_get(table_name)
         table_key_list = [table_object.make_key(
