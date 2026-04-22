@@ -12,9 +12,9 @@ control flow_watchlist_ingress(
     }
     table flow_watchlist {
         key = {
-            ig_intr_md.ingress_port: exact;
-            ig_tm_md.ucast_egress_port: exact;
-            vid: exact;
+            hdr.ethernet.src_addr: exact;
+            hdr.ethernet.dst_addr: exact;
+            hdr.vlan.vid: exact;
         }
         actions = {
             set_flow_id;
