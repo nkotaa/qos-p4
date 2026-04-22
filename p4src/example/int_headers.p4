@@ -11,14 +11,8 @@
     @flexible bit<19> deq_qdepth; \
     @flexible bit<2> deq_congest_stat; \
     @flexible bit<8> app_pool_congest_stat; \
-    @flexible bit<18> deq_timedelta
-
-struct telem_md_ingr_t {
-    PortId_t ingress_port;
-    bit<48> ingress_mac_tstamp;
-    bit<48> ingress_global_tstamp;
-    bit<32> rx_count;
-}
+    @flexible bit<18> deq_timedelta; \
+    @flexible bit<32> tx_bytes_incr
 
 struct telem_digest_t {
     TELEMETRY_FIELDS;
@@ -48,6 +42,7 @@ header int_report_h {
     bit<8> app_pool_congest_stat;
     bit<6> pad6;
     bit<18> deq_timedelta;
+    bit<32> tx_bytes_incr;
 }
 
 #endif /* __INT_HEADERS__ */

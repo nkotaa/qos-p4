@@ -37,6 +37,7 @@ control int_digest_report(
                     telem_report.deq_congest_stat,
                     telem_report.app_pool_congest_stat,
                     telem_report.deq_timedelta,
+                    telem_report.tx_bytes_incr,
                 }
             );
         }
