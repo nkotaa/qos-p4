@@ -4,7 +4,7 @@
 control flow_watchlist_ingress(
         in ingress_intrinsic_metadata_t ig_intr_md,
         in ingress_intrinsic_metadata_for_tm_t ig_tm_md,
-        in bit<12> vid,
+        in ingress_headers_t hdr,
         out flow_count_idx_t flow_id_res)
 {
     action set_flow_id(flow_count_idx_t flow_id) {
