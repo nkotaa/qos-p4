@@ -63,13 +63,28 @@ parser EgressParser(
 
     state parse_egr_mirror {
         pkt.extract(meta.egr_port_mirror);
-        transition accept;
+        transition parse_ethernet;
     }
 
     state parse_bridge {
         pkt.extract(bridge);
         meta.flow_id = bridge.flow_id;
-        meta.telem_md_ingr = bridge.telem_md_ingr;
+        meta.ingress_port = bridge.ingress_port;
+        meta.ingress_mac_tstamp = bridge.ingress_mac_tstamp;
+        meta.ingress_global_tstamp = bridge.ingress_global_tstamp;
+        transition parse_ethernet;
+    }
+
+    state parse_ethernet {
+        pkt.extract(hdr.ethernet);
+        transition select(hdr.ethernet.ether_type) {
+            0x8100: parse_vlan;
+            default: accept;
+        }
+    }
+
+    state parse_vlan {
+        pkt.extract(hdr.vlan);
         transition accept;
     }
 }
