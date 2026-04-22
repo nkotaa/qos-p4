@@ -19,8 +19,6 @@ from controller.monitor import BFRuntimeMonitor
 program_name = testutils.test_param_get("p4_name")
 pkt_len = int(testutils.test_param_get("pkt_len", "128"))
 num_pkts = int(testutils.test_param_get("num_pkts", "2"))
-source_mac = testutils.test_param_get("src_mac", "11:33:55:77:99:00")
-dest_mac = testutils.test_param_get("dst_mac", "00:11:22:33:44:55")
 
 logger = misc_utils.get_logger()
 
@@ -35,11 +33,15 @@ class MonitorControllerTest(FlowTest):
         self.monitor = _set_up_monitor_controller()
 
     def runTest(self):
-        pkt = testutils.simple_tcp_packet(eth_src=source_mac, eth_dst=dest_mac,
-                                          dl_vlan_enable=True, vlan_vid=self.vlan_vid,
-                                          pktlen=pkt_len)
-        super().check_port_forwarding(pkt)
+        pkt = testutils.simple_tcp_packet(
+            eth_src=self.source_mac, eth_dst=self.dest_mac,
+            dl_vlan_enable=True, vlan_vid=self.vlan_vid,
+            pktlen=pkt_len)
+        FlowTest.program_mac_forward_table(self)
+        FlowTest.check_port_forwarding(self, pkt)
+        FlowTest.program_flow_watchlist_table(self)
 
+        logger.info("Starting counters and sending packets...")
         self.monitor.start_rx_counter(self.flow_id)
         self.monitor.start_tx_counter(self.flow_id)
         testutils.send_packet(self, self.ingress_port, pkt, count=num_pkts)
