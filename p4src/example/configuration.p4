@@ -1,10 +1,11 @@
 #ifndef __CONFIGURATION__
 #define __CONFIGURATION__
 
-#define FLOW_COUNT_INDEX_WIDTH 8
-#define FLOW_COUNT 1<<FLOW_COUNT_INDEX_WIDTH
+#define IXP_EGRESS_RESULT_FIELDS \
+    bool is_sampled; \
+    bit<32> sflow_count; \
+    bit<32> tx_bytes_incr
 
-typedef bit<FLOW_COUNT_INDEX_WIDTH> flow_count_idx_t;
 typedef bit<8> header_type_t;
 
 const MirrorType_t EGR_PORT_MIRROR = 1;
