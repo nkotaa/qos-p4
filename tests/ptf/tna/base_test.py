@@ -19,17 +19,34 @@ class FlowTest(BfRuntimeTest):
     egress_port = egress_port
     vlan_vid = vlan_vid
     flow_id = flow_id
+    source_mac = testutils.test_param_get("src_mac", "11:33:55:77:99:00")
+    dest_mac = testutils.test_param_get("dst_mac", "00:11:22:33:44:55")
 
-    def _program_flow_watchlist_table(self):
+    def program_flow_watchlist_table(self):
         logger.info("Programming flow watchlist table for the test...")
+        self.flow_watchlist.info.key_field_annotation_add(
+            'hdr.ethernet.src_addr', 'mac')
+        self.flow_watchlist.info.key_field_annotation_add(
+            'hdr.ethernet.dst_addr', 'mac')
         key = self.flow_watchlist.make_key([
-            gc.KeyTuple('ig_intr_md.ingress_port', ingress_port),
-            gc.KeyTuple('ig_tm_md.ucast_egress_port', egress_port),
-            gc.KeyTuple('vid', vlan_vid)])
+            gc.KeyTuple('hdr.ethernet.src_addr', self.source_mac),
+            gc.KeyTuple('hdr.ethernet.dst_addr', self.dest_mac),
+            gc.KeyTuple('hdr.vlan.vid', vlan_vid)])
         data = self.flow_watchlist.make_data(
             [gc.DataTuple('flow_id', flow_id)],
-            "Ingress.flow_watchlist_ingress.set_flow_id")
+            "Ingress.ixp_ingr_head.flow_watchlist_ingress.set_flow_id")
         self.flow_watchlist.entry_add(self.dev_target, [key], [data])
+
+    def program_mac_forward_table(self):
+        logger.info("Programming mac forwarding table for the test...")
+        self.mac_forward.info.key_field_annotation_add(
+            'hdr.ethernet.dst_addr', 'mac')
+        key = self.mac_forward.make_key([
+            gc.KeyTuple('hdr.ethernet.dst_addr', self.dest_mac)])
+        data = self.mac_forward.make_data(
+            [gc.DataTuple('egress_port', egress_port)],
+            "Ingress.ixp_ingr_tail.forward_frame.set_dest_port")
+        self.mac_forward.entry_add(self.dev_target, [key], [data])
 
     def check_port_forwarding(self, pkt):
         logger.info("Checking if MAC forwarding rules present in switch")
@@ -42,10 +59,12 @@ class FlowTest(BfRuntimeTest):
         self.dev_target = gc.Target(device_id=0)
         self.bfrt_info = self.interface.bfrt_info_get(program_name)
         self.flow_watchlist = self.bfrt_info.table_get(
-            "Ingress.flow_watchlist_ingress.flow_watchlist")
-        self._program_flow_watchlist_table()
+            "Ingress.ixp_ingr_head.flow_watchlist_ingress.flow_watchlist")
+        self.mac_forward = self.bfrt_info.table_get(
+            "Ingress.ixp_ingr_tail.forward_frame.dest_mac")
 
     def tearDown(self):
         # Remove all table entries
         self.flow_watchlist.entry_del(self.dev_target, [])
+        self.mac_forward.entry_del(self.dev_target, [])
         BfRuntimeTest.tearDown(self)
